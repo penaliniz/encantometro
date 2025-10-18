@@ -1,0 +1,10 @@
+{
+  "pdv_id": "LINX_PDV_SV01",
+  "api_url": "http://localhost:3000/api/feedback",
+  "device_vendor_id": 1155,
+  "device_product_id": 22352,
+  "pdv_window_title": "*LINX - SV01*",
+  "enable_keyboard_listener": true,
+  "keyboard_debounce_ms": 300,
+  "api_key": "ChaveDe42Caracteres@123ChaveDe42Caracteres@123"
+}
