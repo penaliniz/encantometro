@@ -1,33 +1,24 @@
 // src/infrastructure/listeners/keyboardListener.js
 // INFRASTRUCTURE: Adaptador de Entrada (Input Adapter)
-// Implementação concreta para ouvir o teclado global.
-
-/**
- * Listener de teclado com mitigação de captura global sensível.
- * - DESABILITADO por padrão (ativa com CONFIG.enable_keyboard_listener = true)
- * - Só captura teclas da whitelist (controles/atalhos), evita capturar texto digitado
- * - Opcional: verifica se janela PDV está ativa chamando windowService.isPdvActive()
- * - Debounce por tecla para reduzir vazamento/high-frequency
- */
+// Implementação concreta para ouvir o teclado (bufferizado).
 
 const CONFIG = require('../../config');
 
 let gkl = null;
 let attached = false;
-let lastSeen = Object.create(null);
-const DEBOUNCE_MS = Number(CONFIG.keyboard_debounce_ms) || 300;
-const ENABLE = Boolean(CONFIG.enable_keyboard_listener);
+let keyBuffer = []; // Armazena as teclas digitadas
+const BUFFER_TIMEOUT_MS = 150; // Tempo para limpar o buffer
+let bufferTimer = null;
+const ALLOWED_CHARS_REGEX = /^[a-zA-Z0-9]$/; // Permite alfanuméricos no buffer
 
-/* whitelist de teclas de controle/atalhos — evita capturar caracteres alfanuméricos */
-const WHITELIST_KEYS = new Set([
-    'enter','escape','tab','backspace','delete',
-    'up','down','left','right',
-    'f1','f2','f3','f4','f5','f6','f7','f8','f9','f10','f11','f12',
-    'home','end','pageup','pagedown',
-    'printscreen','insert'
+// Teclas modificadoras a serem ignoradas
+const IGNORE_KEYS = new Set([
+    'LEFT SHIFT', 'RIGHT SHIFT', 'SHIFT',
+    'LEFT CTRL', 'RIGHT CTRL', 'CTRL',
+    'LEFT ALT', 'RIGHT ALT', 'ALT',
+    'LEFT META', 'RIGHT META', 'META'
 ]);
 
-/* tentativa de integração com windowService (se expuser isPdvActive) */
 let windowService = null;
 try {
     windowService = require('../services/windowService');
@@ -35,56 +26,29 @@ try {
     windowService = null;
 }
 
-/**
- * decide se devemos processar o evento de tecla
- * - evita caracteres imprimíveis (letras, números, símbolos)
- * - usa whitelist de teclas de controle
- * - verifica debounce
- * - opcionalmente verifica foco da janela PDV
- */
-async function shouldProcessKey(keyName) {
-    if (!ENABLE) return false;
-
-    if (!keyName) return false;
-    const name = String(keyName).toLowerCase();
-
-    // só teclas explicitamente permitidas
-    if (!WHITELIST_KEYS.has(name)) return false;
-
-    // debounce simples por tecla
-    const now = Date.now();
-    const last = lastSeen[name] || 0;
-    if (now - last < DEBOUNCE_MS) return false;
-    lastSeen[name] = now;
-
-    // se windowService oferece isPdvActive, somente processar se PDV ativo
+async function isPdvStillActive() {
+    // A implementação desta função permanece a mesma da versão anterior
+    if (!CONFIG.enable_keyboard_listener) return false;
     try {
         if (windowService && typeof windowService.isPdvActive === 'function') {
+            // Usamos um timeout curto para evitar bloqueios longos
             const active = await Promise.race([
                 windowService.isPdvActive().catch(() => false),
-                new Promise((res) => setTimeout(() => res(false), 300)) // timeout curto
+                new Promise((res) => setTimeout(() => res(false), 300))
             ]);
-            if (!active) return false;
+            return active;
         }
     } catch (err) {
-        // falha segura -> não processar para reduzir surface de risco
         return false;
     }
-
+    // Se o serviço não estiver disponível, assume que está ativo por segurança (pode ajustar se necessário)
     return true;
 }
 
-/**
- * cria o listener (não assume attach imediato) — retorna { start, stop }
- */
-function createKeyboardListener(onShortcut) {
-    // onShortcut: (meta) => {}
-    if (!ENABLE) {
-        console.warn('[keyboardListener] disabled by configuration (enable_keyboard_listener=false).');
-        return {
-            start: () => {},
-            stop: () => {}
-        };
+function createKeyboardListener(onWordCaptured) {
+    if (!CONFIG.enable_keyboard_listener) {
+        console.warn('[keyboardListener] disabled by configuration.');
+        return { start: () => {}, stop: () => {} };
     }
 
     try {
@@ -92,31 +56,72 @@ function createKeyboardListener(onShortcut) {
         gkl = new GlobalKeyboardListener();
     } catch (e) {
         console.error('[keyboardListener] failed to require global key listener:', e.message);
-        return {
-            start: () => {},
-            stop: () => {}
-        };
+        return { start: () => {}, stop: () => {} };
     }
 
-    const handler = async (e) => {
-        try {
-            const keyName = e.name || e.key || (e.keychar && String(e.keychar)) || '';
-            if (!keyName) return;
-
-            const processIt = await shouldProcessKey(keyName);
-            if (!processIt) return;
-
-            const meta = {
-                key: String(keyName).toLowerCase(),
-                timestamp: Date.now()
-            };
-
-            try {
-                if (typeof onShortcut === 'function') onShortcut(meta);
-            } catch (cbErr) { /* swallow */ }
-        } catch (err) {
-            console.error('[keyboardListener] handler error (no payload):', err.message);
+    // Função para limpar o buffer no timeout
+    const clearBufferOnTimeout = () => {
+        if (keyBuffer.length > 0) {
+            console.log(`[keyboardListener] Buffer timed out. Clearing buffer.`); // Log útil mantido
+            keyBuffer = [];
         }
+    };
+
+    const handler = async (e) => {
+        // Verifica a janela ativa PRIMEIRO
+        const pdvActive = await isPdvStillActive();
+        if (!pdvActive) {
+            if (keyBuffer.length > 0) keyBuffer = []; // Limpa se foco perdido ANTES de processar
+            return; // Ignora completamente se janela não ativa
+        }
+
+        const keyName = e.name || e.key || '';
+
+        // *** REMOVIDA a verificação de e.state === 'UP' ***
+
+        // Limpa o timer de timeout anterior
+        if (bufferTimer) clearTimeout(bufferTimer);
+
+        // Verifica ENTER primeiro (tanto DOWN quanto UP podem acionar)
+        if (keyName.toUpperCase() === 'RETURN' || keyName.toUpperCase() === 'ENTER') {
+             // Só processa se o buffer não estiver vazio (evita ENTERs duplos)
+            if (keyBuffer.length > 0) {
+                const word = keyBuffer.join('');
+                 console.log(`[keyboardListener] ENTER detected. Processing word: "${word}"`); // Log útil mantido
+                try {
+                    if (typeof onWordCaptured === 'function') {
+                        onWordCaptured(word);
+                    }
+                } catch (cbErr) { console.error('[keyboardListener] Error calling onWordCaptured:', cbErr); }
+                keyBuffer = []; // Limpa o buffer APÓS processar
+            } else {
+                 console.log(`[keyboardListener] ENTER detected with empty buffer. Ignoring.`); // Log útil mantido
+            }
+             // NÃO reinicia o timer aqui, pois a sequência terminou
+            return;
+        }
+
+        // Ignora teclas modificadoras (sem limpar buffer)
+        if (IGNORE_KEYS.has(keyName.toUpperCase())) {
+            // Apenas reinicia o timer e ignora
+            bufferTimer = setTimeout(clearBufferOnTimeout, BUFFER_TIMEOUT_MS);
+            return;
+        }
+
+        // Adiciona alfanuméricos ao buffer (APENAS no evento DOWN para evitar duplicação)
+        if (e.state === 'DOWN' && keyName.length === 1 && ALLOWED_CHARS_REGEX.test(keyName)) {
+            keyBuffer.push(keyName.toUpperCase());
+        } else if (e.state === 'DOWN') {
+             // Limpa buffer para qualquer outra tecla inesperada no DOWN
+             if (keyBuffer.length > 0) { // Só limpa se havia algo
+                 console.log(`[keyboardListener] Invalid key "${keyName}" detected. Clearing buffer.`); // Log útil mantido
+                keyBuffer = [];
+             }
+        }
+        // Eventos 'UP' de alfanuméricos ou outras teclas são ignorados aqui
+
+        // Reinicia o timer de timeout após qualquer tecla processada (exceto ENTER)
+        bufferTimer = setTimeout(clearBufferOnTimeout, BUFFER_TIMEOUT_MS);
     };
 
     function start() {
@@ -125,7 +130,7 @@ function createKeyboardListener(onShortcut) {
                 gkl.addListener(handler);
                 attached = true;
             }
-        } catch (err) { /* ignore */ }
+        } catch (err) { console.error('[keyboardListener] Error attaching listener:', err); }
     }
 
     function stop() {
@@ -133,12 +138,11 @@ function createKeyboardListener(onShortcut) {
             if (gkl && attached) {
                 gkl.removeListener(handler);
             }
-        } catch (err) { /* ignore */ }
+        } catch (err) { console.error('[keyboardListener] Error detaching listener:', err); }
         attached = false;
+        keyBuffer = [];
+        if(bufferTimer) clearTimeout(bufferTimer);
     }
-
-    // opcional: começar imediatamente (mantive comportamento seguro: não auto-start)
-    // start();
 
     return { start, stop };
 }

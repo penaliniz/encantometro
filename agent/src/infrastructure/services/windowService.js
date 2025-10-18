@@ -17,7 +17,7 @@ function refocusPdv() {
         console.error(`[${new Date().toISOString()}] refocusPdv: título inválido.`);
         return Promise.reject(new Error('Título do PDV inválido.'));
     }
-    // whitelist de caracteres básicos (letras, números, espaços e alguns símbolos)
+    // whitelist de caracteres básicos
     if (!/^[\w\d\s\-\._,;:()\/\\]+$/.test(rawTitle)) {
         console.error(`[${new Date().toISOString()}] refocusPdv: título contém caracteres não permitidos.`);
         return Promise.reject(new Error('Título do PDV contém caracteres inválidos.'));
@@ -62,19 +62,23 @@ function refocusPdv() {
 async function isPdvActive() {
     try {
         const rawTitle = String(CONFIG.pdv_window_title || '').trim();
+        // validação do título
         if (!rawTitle || rawTitle.length === 0 || rawTitle.length > 200) {
             return false;
         }
         if (!/^[\w\d\s\-\._,;:()\/\\]+$/.test(rawTitle)) {
-            return false;
+             return false;
         }
 
-        // Usa active-win (mais eficiente que spawn/PowerShell)
+        // Usa active-win
         const info = await activeWin();
         if (!info || !info.title) return false;
 
         const lcActive = String(info.title).toLowerCase();
         const lcTarget = rawTitle.toLowerCase();
+
+        // Linhas de DEBUG removidas daqui
+
         return lcActive.includes(lcTarget);
     } catch (e) {
         // fallback seguro

@@ -4,6 +4,7 @@
 
 const { isValidFeedback } = require('../domain/feedbackTypes');
 const { requestRefocus } = require('../infrastructure/services/requestRefocus');
+const CONFIG = require('../config'); // <-- IMPORTAR A CONFIGURAÇÃO
 
 /**
  * Cria uma instância do processador de feedback.
@@ -26,23 +27,40 @@ function createFeedbackProcessor(services) {
     async function process(word) {
         console.log(`\n[${new Date().toISOString()}] Processando palavra: "${word}"`);
 
+        // 1. Validar a palavra (ex: "VERYGOOD")
         if (isValidFeedback(word)) {
             console.log(`[SUCESSO] Feedback válido encontrado: ${word}`);
+
+            // 2. MONTAR O PAYLOAD (objeto) que a API espera
+            const payload = {
+                pdv_id: CONFIG.pdv_id, // Vem do config.json
+                input_raw: word
+            };
+
             try {
-                // 1. Chama o serviço de feedback (abstraído)
-                await feedbackService.send(word);
-                
-                // 2. Chama o serviço de janela via fila/coalescer
-                // Mantemos a chamada assíncrona com tratamento de erro não bloqueante
+                // 3. Chama o serviço de feedback (abstraído) com o OBJETO
+                await feedbackService.send(payload);
+
+                // 4. Chama o serviço de janela via fila/coalescer (TEMPORARIAMENTE DESATIVADO)
                 setTimeout(() => {
-                    requestRefocus().catch((err) => {
-                        console.error(`[FALHA] requestRefocus erro: ${err && err.message}`);
-                    });
+                    console.log(`[DEBUG] ProcessFeedback: Prestes a chamar requestRefocus... (CHAMADA DESATIVADA PARA TESTE)`); // Log ajustado
+
+                    // --- CHAMADA requestRefocus COMENTADA ---
+                    // requestRefocus()
+                    //   .then(() => {
+                    //       console.log(`[DEBUG] ProcessFeedback: requestRefocus concluído com sucesso.`);
+                    //   })
+                    //   .catch((err) => {
+                    //       console.error(`[FALHA] requestRefocus erro: ${err && err.message}`);
+                    //   });
+                    // --- FIM DO COMENTÁRIO ---
+
+                    console.log('[DEBUG] ProcessFeedback: Chamada a requestRefocus pulada para teste.');
+
                 }, 150); // Delay original mantido
 
             } catch (error) {
-                // O feedbackService já loga o erro, mas poderíamos
-                // adicionar uma lógica de retry aqui, se necessário.
+                // O feedbackService já loga o erro
                 console.error(`[FALHA] Erro no processamento do feedback: ${error.message}`);
             }
         } else {
