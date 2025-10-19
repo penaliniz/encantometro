@@ -1,136 +1,97 @@
 // src/index.js
 
-// Manipuladores de erro/saída (MANTENHA ESTE BLOCO NO TOPO)
-process.on('uncaughtException', (error, origin) => {
-  console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.error('!!!      ERRO NÃO TRATADO (CRASH)        !!!');
-  console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.error('Origem:', origin);
-  console.error('Erro:', error);
-  console.error('Stack Trace:', error.stack);
-  console.error('----------------------------------------------');
-  process.exit(1); // Força a saída após logar
-});
+// Handlers de erro/saída no topo (sem alterações)
+process.on('uncaughtException', (error, origin) => { console.error('ERRO NÃO TRATADO:', error, origin); process.exit(1); });
+process.on('unhandledRejection', (reason, promise) => { console.error('REJEIÇÃO NÃO TRATADA:', reason, promise); });
+process.on('exit', (code) => { console.log(`PROCESSO SAINDO COM CÓDIGO: ${code}`); });
+process.on('SIGINT', () => { console.log('RECEBIDO SIGINT'); process.exit(0); });
+process.on('SIGTERM', () => { console.log('RECEBIDO SIGTERM'); process.exit(0); });
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    console.error('!!! REJEIÇÃO DE PROMISE NÃO TRATADA      !!!');
-    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    console.error('Promise:', promise);
-    console.error('Motivo:', reason);
-    console.error('----------------------------------------------');
-});
-
-process.on('exit', (code) => {
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.log(`!!!    PROCESSO A SAIR COM CÓDIGO: ${code}     !!!`);
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-});
-
-process.on('SIGINT', () => {
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.log('!!!       RECEBIDO SIGINT (Ctrl+C)         !!!');
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-   process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.log('!!!           RECEBIDO SIGTERM              !!!');
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  process.exit(0);
-});
-// --- FIM DOS HANDLERS ---
-
-// ENTRYPOINT: Ponto de entrada da aplicação (Composition Root)
+// 1. Imports
 const feedbackService = require('./infrastructure/services/feedbackService');
-const windowService = require('./infrastructure/services/windowService');
+const windowService = require('./infrastructure/services/windowService'); // Mantido
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 const CONFIG = require('./config');
 const { createKeyboardListener } = require('./infrastructure/listeners/keyboardListener');
 const { createFeedbackProcessor } = require('./application/processFeedback');
-
-const feedbackProcessor = createFeedbackProcessor({
-    feedbackService,
-    windowService
-});
+const { startWatching } = require('./infrastructure/logWatcher'); // Importa o watcher
+const { requestRefocus } = require('./infrastructure/services/requestRefocus'); // Importa refocus
 
 console.log(`[agent] starting - pid=${process.pid} env=${process.env.NODE_ENV || 'dev'}`);
-
 const consentFile = path.resolve(__dirname, '..', 'consent.log');
 
+// Função askConsentIfNeeded (sem alterações lógicas significativas)
 async function askConsentIfNeeded() {
-  // A implementação desta função permanece a mesma
-  if (!CONFIG.enable_keyboard_listener) {
-    console.log('[agent] keyboard listener disabled by configuration.');
-    return false;
-  }
-  try {
-    const existing = fs.readFileSync(consentFile, 'utf8').trim();
-    if (existing.split('\n')[0] === 'consent=granted') {
-      console.log('[agent] consent previously granted (consent.log). Starting listener.');
-      return true;
-    }
-  } catch (e) {
-    if (e.code !== 'ENOENT') {
-        console.warn('[agent] Error reading consent file:', e.message);
-    }
-  }
-
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  const answer = await new Promise((res) => {
-    rl.question('Keyboard listener is enabled in config. Grant runtime consent to start it? (y/N): ', (ans) => {
-      rl.close();
-      res(ans.trim().toLowerCase());
-    });
-  });
-
-  if (answer === 'y' || answer === 'yes') {
-    try {
-      fs.writeFileSync(consentFile, `consent=granted\ntimestamp=${new Date().toISOString()}\n`, { flag: 'w', encoding: 'utf8' });
-      console.log('[agent] consent recorded.');
-    } catch (e) {
-      console.warn('[agent] failed to write consent file:', e.message);
-    }
-    return true;
-  }
-
-  console.log('[agent] consent not granted; keyboard listener will not start.');
-  return false;
+    if (!CONFIG.enable_keyboard_listener) { console.log('[agent] keyboard listener disabled by configuration.'); return false; }
+    try { if (fs.readFileSync(consentFile, 'utf8').trim().split('\n')[0] === 'consent=granted') { console.log('[agent] consent previously granted.'); return true; }}
+    catch (e) { if (e.code !== 'ENOENT') console.warn('[agent] Error reading consent file:', e.message); }
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const answer = await new Promise((res)=> rl.question('Grant runtime consent for keyboard listener? (y/N): ', (ans)=>{ rl.close(); res(ans.trim().toLowerCase()); }));
+    if(answer==='y'||answer==='yes'){ try { fs.writeFileSync(consentFile, `consent=granted\ntimestamp=${new Date().toISOString()}\n`); console.log('[agent] consent recorded.'); return true; } catch(e){ console.warn('[agent] failed write consent:', e.message); return true; }}
+    console.log('[agent] consent not granted.'); return false;
 }
 
 (async () => {
   try {
     const consent = await askConsentIfNeeded();
 
-    // Declara 'listener' antes para ser acessível no callback
-    let listener = null;
+    // Callback quando a linha de início de venda é detectada
+    const handleSaleStart = () => {
+        console.log("[agent] Venda Iniciada. Preparado para receber feedback.");
+    };
 
-    listener = createKeyboardListener(async (capturedWord) => { // Usa a variável declarada
-      try {
-        if (capturedWord) {
-          await feedbackProcessor.process(capturedWord);
-          // --- LINHAS REMOVIDAS/COMENTADAS ---
-          // console.log('[agent] Feedback processado, a parar o listener...');
-          // if (listener && typeof listener.stop === 'function') {
-          //     listener.stop(); // NÃO PARAR MAIS O LISTENER AQUI
-          //     console.log('[agent] Listener parado.');
-          // }
-          // ------------------------------------
+    // Callback quando a linha de fim de venda é detectada
+    const handleSaleEnd = async (feedbackReceived, transactionData) => {
+        console.log(`[agent] Venda Finalizada. Feedback: ${feedbackReceived || 'Nenhum'}, Dados Transação: ${transactionData || 'Nenhum'}`);
+
+        if (feedbackReceived) {
+            console.log(`[agent] Enviando feedback "${feedbackReceived}" com dados da transação para a API...`);
+            const payload = {
+                pdv_id: CONFIG.pdv_id,
+                input_raw: feedbackReceived,
+                transaction_details: transactionData // Inclui os dados extraídos
+            };
+            try {
+                await feedbackService.send(payload); // Envia o payload completo
+                console.log("[agent] Feedback e dados enviados com sucesso.");
+
+                // Chama o refocus APÓS o envio (se necessário)
+                 // console.log("[agent] Chamando refocus..."); // Descomente se quiser reativar
+                 // setTimeout(() => {
+                 //    requestRefocus().catch((err) => {
+                 //        console.error(`[FALHA] requestRefocus erro pós-venda: ${err && err.message}`);
+                 //    });
+                 // }, 300);
+
+            } catch (error) {
+                console.error(`[FALHA] Erro ao enviar feedback/dados após fim da venda: ${error.message}`);
+            }
+        } else {
+             console.log("[agent] Nenhuma avaliação recebida durante a venda. Nada a enviar.");
+             // Considerar se deve chamar refocus mesmo sem feedback
         }
-      } catch (err) {
-        console.error('[agent] erro ao processar feedback via listener:', err && err.message);
-      }
+    };
+
+    // Inicia o Log Watcher e passa os callbacks
+    const logWatcher = startWatching({
+        onSaleStart: handleSaleStart,
+        onSaleEnd: handleSaleEnd
     });
 
+    // Cria o processador de feedback, injetando o logWatcher
+     const feedbackProcessor = createFeedbackProcessor({ logWatcher });
+
+    // Cria o listener do teclado, passando a função process e a instância do watcher
+    const listener = createKeyboardListener(feedbackProcessor.process, logWatcher);
+
     if (consent) {
-      if (listener && typeof listener.start === 'function') { // Verifica se listener foi inicializado
+      if (listener && typeof listener.start === 'function') {
         listener.start();
         console.log('[agent] keyboard listener started.');
       } else {
-        console.warn('[agent] listener has no start/stop methods or failed to initialize.');
+        console.warn('[agent] listener failed to initialize properly.');
       }
     }
 

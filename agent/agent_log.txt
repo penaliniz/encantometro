@@ -1,0 +1,279 @@
+
+> atendimento-agent@1.0.0 start
+> node src/index.js
+
+[agent] starting - pid=22936 env=dev
+[agent] consent previously granted.
+[logWatcher] Iniciando monitoramento (via fs.watchFile) do arquivo: c:\p2k\bin\CSIDebugFile.txt
+[logWatcher] Tamanho inicial do ficheiro: 8289520 bytes.
+[logWatcher] Monitoramento fs.watchFile configurado.
+[agent] keyboard listener started.
+[agent] Adicionado timer para manter o processo ativo.
+[logWatcher] Ficheiro modificado. Lendo de 8289520 até 8291001
+[logWatcher] Ficheiro modificado. Lendo de 8291001 até 8308640
+[logWatcher] Ficheiro modificado. Lendo de 8308640 até 8308730
+[logWatcher] Ficheiro modificado. Lendo de 8308730 até 8316574
+[logWatcher] Ficheiro modificado. Lendo de 8316574 até 8339710
+[logWatcher] Ficheiro modificado. Lendo de 8339710 até 8339902
+[logWatcher] Ficheiro modificado. Lendo de 8339902 até 8340478
+[logWatcher] Ficheiro modificado. Lendo de 8340478 até 8394354
+[logWatcher] Ficheiro modificado. Lendo de 8394354 até 8475818
+[logWatcher] Ficheiro modificado. Lendo de 8475818 até 8476249
+[logWatcher] Ficheiro modificado. Lendo de 8476249 até 8477977
+[logWatcher] Ficheiro modificado. Lendo de 8477977 até 8491125
+[logWatcher] Ficheiro modificado. Lendo de 8491125 até 8493006
+[logWatcher] Ficheiro modificado. Lendo de 8493006 até 8523630
+[logWatcher] Ficheiro modificado. Lendo de 8523630 até 8567157
+[logWatcher] Ficheiro modificado. Lendo de 8567157 até 8567349
+[logWatcher] Ficheiro modificado. Lendo de 8567349 até 8570051
+[logWatcher] Ficheiro modificado. Lendo de 8570051 até 8639826
+[logWatcher] Ficheiro modificado. Lendo de 8639826 até 8647565
+[logWatcher] Ficheiro modificado. Lendo de 8647565 até 8647666
+[logWatcher] Ficheiro modificado. Lendo de 8647666 até 8647756
+[logWatcher] Ficheiro modificado. Lendo de 8647756 até 8647948
+[logWatcher] Ficheiro modificado. Lendo de 8647948 até 8648039
+[logWatcher] Ficheiro modificado. Lendo de 8648039 até 8648656
+[logWatcher] Ficheiro modificado. Lendo de 8648656 até 8648746
+[logWatcher] Ficheiro modificado. Lendo de 8648746 até 8648847
+[logWatcher] Ficheiro modificado. Lendo de 8648847 até 8651311
+[logWatcher] Ficheiro modificado. Lendo de 8651311 até 8651910
+[logWatcher] Ficheiro modificado. Lendo de 8651910 até 8652990
+[logWatcher] Ficheiro modificado. Lendo de 8652990 até 8653080
+[logWatcher] Ficheiro modificado. Lendo de 8653080 até 8653272
+[logWatcher] Ficheiro modificado. Lendo de 8653272 até 8653373
+[logWatcher] Ficheiro modificado. Lendo de 8653373 até 8653464
+[logWatcher] Ficheiro modificado. Lendo de 8653464 até 8653554
+[logWatcher] Ficheiro modificado. Lendo de 8653554 até 8742229
+[logWatcher] DETECTADO: Linha de fim de venda!
+[logWatcher DEBUG] Linha completa do fim: "[19/10/2025 19:27:09] [Thread-62] GerenciadorCMOS :: atualizaRecebimentos :: consultando a transação -> 20251019,76,97,1243"
+[logWatcher] Dados da transação extraídos: "20251019,76,97,1243"
+[logWatcher] Aviso: Linha de fim encontrada mas venda não estava ativa.
+[logWatcher] Ficheiro modificado. Lendo de 8742229 até 8788138
+[logWatcher] Ficheiro modificado. Lendo de 8788138 até 8806624
+[logWatcher] Ficheiro modificado. Lendo de 8806624 até 8925942
+[logWatcher] Ficheiro modificado. Lendo de 8925942 até 8950529
+[logWatcher] Ficheiro modificado. Lendo de 8950529 até 8950630
+[logWatcher] Ficheiro modificado. Lendo de 8950630 até 8951247
+[logWatcher] Ficheiro modificado. Lendo de 8951247 até 8951439
+[logWatcher] Ficheiro modificado. Lendo de 8951439 até 8951529
+[logWatcher] Ficheiro modificado. Lendo de 8951529 até 8953993
+[logWatcher] Ficheiro modificado. Lendo de 8953993 até 8954181
+[logWatcher] Ficheiro modificado. Lendo de 8954181 até 8956458
+[logWatcher] Ficheiro modificado. Lendo de 8956458 até 9010659
+[logWatcher] Ficheiro modificado. Lendo de 9010659 até 9072659
+[logWatcher] Ficheiro modificado. Lendo de 9072659 até 9072851
+[logWatcher] Ficheiro modificado. Lendo de 9072851 até 9073043
+[logWatcher] Ficheiro modificado. Lendo de 9073043 até 9079872
+[logWatcher] Ficheiro modificado. Lendo de 9079872 até 9080404
+[logWatcher] Ficheiro modificado. Lendo de 9080404 até 9080598
+[logWatcher] Ficheiro modificado. Lendo de 9080598 até 9081261
+[logWatcher] Ficheiro modificado. Lendo de 9081261 até 9081351
+[logWatcher] Ficheiro modificado. Lendo de 9081351 até 9094764
+[logWatcher] DETECTADO: Linha de início de venda!
+[logWatcher] Estado: Venda INICIADA.
+[agent] Venda Iniciada. Preparado para receber feedback.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9094764 até 9113884
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9113884 até 9144862
+[logWatcher] Ficheiro modificado. Lendo de 9144862 até 9145246
+[keyboardListener] Buffer timed out. Clearing buffer.
+[logWatcher] Ficheiro modificado. Lendo de 9145246 até 9145438
+[logWatcher] Ficheiro modificado. Lendo de 9145438 até 9145818
+[logWatcher] Ficheiro modificado. Lendo de 9145818 até 9146198
+[logWatcher] Ficheiro modificado. Lendo de 9146198 até 9146582
+[keyboardListener] Buffer timed out. Clearing buffer.
+[logWatcher] Ficheiro modificado. Lendo de 9146582 até 9146774
+[logWatcher] Ficheiro modificado. Lendo de 9146774 até 9147451
+[keyboardListener] Buffer timed out. Clearing buffer.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9147451 até 9172119
+[logWatcher] Ficheiro modificado. Lendo de 9172119 até 9287887
+[logWatcher] Ficheiro modificado. Lendo de 9287887 até 9288318
+[logWatcher] Ficheiro modificado. Lendo de 9288318 até 9289662
+[keyboardListener] ENTER detected during active sale. Processing word: "POOR"
+
+[2025-10-19T22:28:17.103Z] Processando palavra recebida: "POOR"
+[logWatcher] Feedback recebido durante venda ativa: POOR
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9289662 até 9303926
+[logWatcher] Ficheiro modificado. Lendo de 9303926 até 9306632
+[logWatcher] Ficheiro modificado. Lendo de 9306632 até 9375085
+[logWatcher] Ficheiro modificado. Lendo de 9375085 até 9378496
+[logWatcher] Ficheiro modificado. Lendo de 9378496 até 9381198
+[logWatcher] Ficheiro modificado. Lendo de 9381198 até 9451639
+[logWatcher] Ficheiro modificado. Lendo de 9451639 até 9458718
+[logWatcher] Ficheiro modificado. Lendo de 9458718 até 9459335
+[logWatcher] Ficheiro modificado. Lendo de 9459335 até 9461799
+[logWatcher] Ficheiro modificado. Lendo de 9461799 até 9461990
+[logWatcher] Ficheiro modificado. Lendo de 9461990 até 9462081
+[logWatcher] Ficheiro modificado. Lendo de 9462081 até 9462680
+[logWatcher] Ficheiro modificado. Lendo de 9462680 até 9462770
+[logWatcher] Ficheiro modificado. Lendo de 9462770 até 9462871
+[logWatcher] Ficheiro modificado. Lendo de 9462871 até 9463951
+[logWatcher] Ficheiro modificado. Lendo de 9463951 até 9464041
+[logWatcher] Ficheiro modificado. Lendo de 9464041 até 9464658
+[logWatcher] Ficheiro modificado. Lendo de 9464658 até 9464749
+[logWatcher] Ficheiro modificado. Lendo de 9464749 até 9464850
+[logWatcher] Ficheiro modificado. Lendo de 9464850 até 9467314
+[logWatcher] Ficheiro modificado. Lendo de 9467314 até 9467404
+[logWatcher] Ficheiro modificado. Lendo de 9467404 até 9467598
+[logWatcher] Ficheiro modificado. Lendo de 9467598 até 9561764
+[logWatcher] DETECTADO: Linha de fim de venda!
+[logWatcher DEBUG] Linha completa do fim: "[19/10/2025 19:30:04] [Thread-62] GerenciadorCMOS :: atualizaRecebimentos :: consultando a transação -> 20251019,80,97,1243"
+[logWatcher] Dados da transação extraídos: "20251019,80,97,1243"
+[logWatcher] Estado: Venda FINALIZADA.
+[agent] Venda Finalizada. Feedback: POOR, Dados Transação: 20251019,80,97,1243
+[agent] Enviando feedback "POOR" com dados da transação para a API...
+[feedbackService] send -> url=http://localhost:3000/api/feedback pdv_id=LINX_PDV_SV01 retries=3 timeout=5000
+[feedbackService] headers: {
+  'Content-Type': 'application/json',
+  'x-api-key': 'ChaveDe42Caracteres@123ChaveDe42Caracteres@123'
+}
+[feedbackService] attempt 1 success status=201
+[feedbackService] response.data: {
+  message: 'Feedback recebido com sucesso!',
+  data: {
+    id: 1,
+    timestamp: '2025-10-19T22:30:04.979Z',
+    pdv_id: 'LINX_PDV_SV01',
+    input_raw: 'POOR',
+    categoria: 'Atendimento',
+    transaction_details: '20251019,80,97,1243'
+  }
+}
+[agent] Feedback e dados enviados com sucesso.
+[logWatcher] Ficheiro modificado. Lendo de 9561764 até 9603132
+[logWatcher] Ficheiro modificado. Lendo de 9603132 até 9632345
+[logWatcher] Ficheiro modificado. Lendo de 9632345 até 9756667
+[logWatcher] Ficheiro modificado. Lendo de 9756667 até 9766780
+[logWatcher] Ficheiro modificado. Lendo de 9766780 até 9766881
+[logWatcher] Ficheiro modificado. Lendo de 9766881 até 9766971
+[logWatcher] Ficheiro modificado. Lendo de 9766971 até 9767163
+[logWatcher] Ficheiro modificado. Lendo de 9767163 até 9767351
+[logWatcher] Ficheiro modificado. Lendo de 9767351 até 9769628
+[logWatcher] Ficheiro modificado. Lendo de 9769628 até 9832148
+[logWatcher] Ficheiro modificado. Lendo de 9832148 até 9885829
+[logWatcher] Ficheiro modificado. Lendo de 9885829 até 9892658
+[logWatcher] Ficheiro modificado. Lendo de 9892658 até 9893089
+[logWatcher] Ficheiro modificado. Lendo de 9893089 até 9893190
+[logWatcher] Ficheiro modificado. Lendo de 9893190 até 9893280
+[logWatcher] Ficheiro modificado. Lendo de 9893280 até 9893897
+[logWatcher] Ficheiro modificado. Lendo de 9893897 até 9896030
+[logWatcher] Ficheiro modificado. Lendo de 9896030 até 9906755
+[logWatcher] DETECTADO: Linha de início de venda!
+[logWatcher] Estado: Venda INICIADA.
+[agent] Venda Iniciada. Preparado para receber feedback.
+[logWatcher] Ficheiro modificado. Lendo de 9906755 até 9906985
+[logWatcher] Ficheiro modificado. Lendo de 9906985 até 9909449
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9909449 até 9928569
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9928569 até 9943450
+[logWatcher] Ficheiro modificado. Lendo de 9943450 até 9959547
+[logWatcher] Ficheiro modificado. Lendo de 9959547 até 9960123
+[keyboardListener] Buffer timed out. Clearing buffer.
+[logWatcher] Ficheiro modificado. Lendo de 9960123 até 9960507
+[keyboardListener] Buffer timed out. Clearing buffer.
+[logWatcher] Ficheiro modificado. Lendo de 9960507 até 9960699
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 9960699 até 9973235
+[logWatcher] Ficheiro modificado. Lendo de 9973235 até 10101134
+[logWatcher] Ficheiro modificado. Lendo de 10101134 até 10101710
+[keyboardListener] ENTER detected during active sale. Processing word: "GOOD"
+
+[2025-10-19T22:31:10.495Z] Processando palavra recebida: "GOOD"
+[logWatcher] Feedback recebido durante venda ativa: GOOD
+[keyboardListener] ENTER detected with empty buffer. Ignoring.
+[logWatcher] Ficheiro modificado. Lendo de 10101710 até 10114861
+[logWatcher] Ficheiro modificado. Lendo de 10114861 até 10116742
+[logWatcher] Ficheiro modificado. Lendo de 10116742 até 10137496
+[logWatcher] Ficheiro modificado. Lendo de 10137496 até 10191464
+[logWatcher] Ficheiro modificado. Lendo de 10191464 até 10191656
+[logWatcher] Ficheiro modificado. Lendo de 10191656 até 10191746
+[logWatcher] Ficheiro modificado. Lendo de 10191746 até 10191847
+[logWatcher] Ficheiro modificado. Lendo de 10191847 até 10260026
+[logWatcher] Ficheiro modificado. Lendo de 10260026 até 10272070
+[logWatcher] Ficheiro modificado. Lendo de 10272070 até 10272160
+[logWatcher] Ficheiro modificado. Lendo de 10272160 até 10272251
+[logWatcher] Ficheiro modificado. Lendo de 10272251 até 10272352
+[logWatcher] Ficheiro modificado. Lendo de 10272352 até 10272969
+[logWatcher] Ficheiro modificado. Lendo de 10272969 até 10273568
+[logWatcher] Ficheiro modificado. Lendo de 10273568 até 10273658
+[logWatcher] Ficheiro modificado. Lendo de 10273658 até 10274738
+[logWatcher] Ficheiro modificado. Lendo de 10274738 até 10277202
+[logWatcher] Ficheiro modificado. Lendo de 10277202 até 10277303
+[logWatcher] Ficheiro modificado. Lendo de 10277303 até 10277497
+[logWatcher] Ficheiro modificado. Lendo de 10277497 até 10277588
+[logWatcher] Ficheiro modificado. Lendo de 10277588 até 10277678
+[logWatcher] Ficheiro modificado. Lendo de 10277678 até 10277971
+[logWatcher] Ficheiro modificado. Lendo de 10277971 até 10278165
+[logWatcher] Ficheiro modificado. Lendo de 10278165 até 10315721
+[logWatcher] Ficheiro modificado. Lendo de 10315721 até 10386535
+[logWatcher] DETECTADO: Linha de fim de venda!
+[logWatcher DEBUG] Linha completa do fim: "[19/10/2025 19:32:50] [Thread-62] GerenciadorCMOS :: atualizaRecebimentos :: consultando a transação -> 20251019,84,97,1243"
+[logWatcher] Dados da transação extraídos: "20251019,84,97,1243"
+[logWatcher] Estado: Venda FINALIZADA.
+[agent] Venda Finalizada. Feedback: GOOD, Dados Transação: 20251019,84,97,1243
+[agent] Enviando feedback "GOOD" com dados da transação para a API...
+[feedbackService] send -> url=http://localhost:3000/api/feedback pdv_id=LINX_PDV_SV01 retries=3 timeout=5000
+[feedbackService] headers: {
+  'Content-Type': 'application/json',
+  'x-api-key': 'ChaveDe42Caracteres@123ChaveDe42Caracteres@123'
+}
+[feedbackService] attempt 1 success status=201
+[feedbackService] response.data: {
+  message: 'Feedback recebido com sucesso!',
+  data: {
+    id: 2,
+    timestamp: '2025-10-19T22:32:51.273Z',
+    pdv_id: 'LINX_PDV_SV01',
+    input_raw: 'GOOD',
+    categoria: 'Ambiente',
+    transaction_details: '20251019,84,97,1243'
+  }
+}
+[agent] Feedback e dados enviados com sucesso.
+[logWatcher] Ficheiro modificado. Lendo de 10386535 até 10413700
+[logWatcher] Ficheiro modificado. Lendo de 10413700 até 10485403
+[logWatcher] Ficheiro modificado. Lendo de 10485403 até 10545994
+[logWatcher] Ficheiro modificado. Lendo de 10545994 até 10577258
+[logWatcher] Ficheiro modificado. Lendo de 10577258 até 10577452
+[logWatcher] Ficheiro modificado. Lendo de 10577452 até 10577644
+[logWatcher] Ficheiro modificado. Lendo de 10577644 até 10578261
+[logWatcher] Ficheiro modificado. Lendo de 10578261 até 10578362
+[logWatcher] Ficheiro modificado. Lendo de 10578362 até 10578550
+[logWatcher] Ficheiro modificado. Lendo de 10578550 até 10580827
+[logWatcher] Ficheiro modificado. Lendo de 10580827 até 10580917
+[logWatcher] Ficheiro modificado. Lendo de 10580917 até 10583381
+[logWatcher] Ficheiro modificado. Lendo de 10583381 até 10646846
+[logWatcher] Ficheiro modificado. Lendo de 10646846 até 10696221
+[logWatcher] Ficheiro modificado. Lendo de 10696221 até 10699775
+[logWatcher] Ficheiro modificado. Lendo de 10699775 até 10700206
+[logWatcher] Ficheiro modificado. Lendo de 10700206 até 10700397
+[logWatcher] Ficheiro modificado. Lendo de 10700397 até 10700487
+[logWatcher] Ficheiro modificado. Lendo de 10700487 até 10700588
+[logWatcher] Ficheiro modificado. Lendo de 10700588 até 10701205
+[logWatcher] Ficheiro modificado. Lendo de 10701205 até 10703669
+[logWatcher] Ficheiro modificado. Lendo de 10703669 até 10703759
+[logWatcher] Ficheiro modificado. Lendo de 10703759 até 10703967
+[logWatcher] Ficheiro modificado. Lendo de 10703967 até 10704399
+[logWatcher] Ficheiro modificado. Lendo de 10704399 até 10704500
+[logWatcher] Ficheiro modificado. Lendo de 10704500 até 10704590
+[logWatcher] Ficheiro modificado. Lendo de 10704590 até 10704691
+[logWatcher] Ficheiro modificado. Lendo de 10704691 até 10704781
+[logWatcher] Ficheiro modificado. Lendo de 10704781 até 10705398
+[logWatcher] Ficheiro modificado. Lendo de 10705398 até 10705606
+[logWatcher] Ficheiro modificado. Lendo de 10705606 até 10708310
+[logWatcher] Ficheiro modificado. Lendo de 10708310 até 10708502
+[logWatcher] Ficheiro modificado. Lendo de 10708502 até 10708603
+RECEBIDO SIGINT
+PROCESSO SAINDO COM CÓDIGO: 0
+Deseja finalizar o arquivo em lotes (S/N)? 
+^C
