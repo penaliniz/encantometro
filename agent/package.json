@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --config jest.config.js",
+    "test:coverage": "jest --runInBand --config jest.config.js --coverage"
   },
   "dependencies": {
     "active-win": "^8.0.0",
@@ -19,11 +20,5 @@
   },
   "engines": {
     "node": ">=16.0.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/tests"
-    ]
   }
 }

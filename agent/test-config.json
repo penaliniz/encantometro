@@ -1,0 +1,46 @@
+{
+  "name": "encantometro-test-runner",
+  "version": "1.0.0",
+  "description": "Script para executar todos os testes do Encantometro",
+  "scripts": {
+    "test": "jest --runInBand --coverage --verbose",
+    "test:unit": "jest tests/*.spec.js --runInBand --coverage",
+    "test:integration": "jest tests/integration.spec.js --runInBand",
+    "test:watch": "jest --watch --runInBand",
+    "test:coverage": "jest --coverage --coverageReporters=text --coverageReporters=html",
+    "test:ci": "jest --ci --coverage --watchAll=false"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/tests"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.spec.js",
+      "!src/**/*.test.js",
+      "!node_modules/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
+    "testMatch": [
+      "**/tests/**/*.spec.js",
+      "**/tests/**/*.test.js"
+    ],
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+    "testTimeout": 10000,
+    "verbose": true,
+    "forceExit": true,
+    "detectOpenHandles": true
+  }
+}
