@@ -4,3 +4,4 @@
  /server/.env.local
  /agent/node_modules
  /server/node_modules
+node_modules
