@@ -13,7 +13,7 @@ function validateMongoUri(uri) {
 
     // Remove espaços em branco
     const cleanUri = uri.trim();
-    
+
     // Verifica se começa com mongodb:// ou mongodb+srv://
     const validProtocols = /^mongodb(\+srv)?:\/\//;
     if (!validProtocols.test(cleanUri)) {
@@ -21,30 +21,44 @@ function validateMongoUri(uri) {
         return false;
     }
 
-    // Verifica se contém caracteres suspeitos que podem indicar injection
-    const suspiciousChars = /[<>'"`;|&$(){}[\]\\]/;
+    // Verifica se contém caracteres suspeitos (removido o & da lista)
+    const suspiciousChars = /[<>'"`;|${}()[\]\\]/;
     if (suspiciousChars.test(cleanUri)) {
         console.error('[mongodb] URI contém caracteres suspeitos que podem indicar injection');
         return false;
     }
 
-    // Verifica se tem pelo menos um host válido
-    const hostPattern = /mongodb(\+srv)?:\/\/([^\/]+)/;
+    // Verifica se tem pelo menos um host válido, ignorando credenciais
+    // Regex ajustada para capturar o host *depois* de "user:pass@" opcional
+    const hostPattern = /mongodb(?:\+srv)?:\/\/(?:[^@\/]+@)?([^\/?]+)/;
     const hostMatch = cleanUri.match(hostPattern);
-    if (!hostMatch || !hostMatch[2]) {
-        console.error('[mongodb] URI deve conter pelo menos um host válido');
+
+    // Agora o host principal (ou lista de hosts) está em hostMatch[1]
+    if (!hostMatch || !hostMatch[1]) {
+        console.error('[mongodb] URI não contém um host válido após as credenciais');
         return false;
     }
 
     // Validação adicional para hosts suspeitos
-    const hosts = hostMatch[2].split(',');
+    const hostsString = hostMatch[1]; // A parte que contém apenas os hosts
+    const hosts = hostsString.split(','); // Separa se houver múltiplos hosts (comum em mongodb://)
     for (const host of hosts) {
         const cleanHost = host.trim();
-        // Verifica se é um IP válido ou domínio válido
+        // Verifica se é um IP válido ou domínio válido (sem porta ou com porta)
         const ipPattern = /^(\d{1,3}\.){3}\d{1,3}(:\d+)?$/;
-        const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*(:\d+)?$/;
-        
-        if (!ipPattern.test(cleanHost) && !domainPattern.test(cleanHost)) {
+        // Regex de domínio um pouco mais permissiva para subdomínios de clusters, etc.
+        const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9.\-]{0,61}[a-zA-Z0-9])?(:\d+)?$/;
+
+        // Verifica se o IP está dentro dos limites válidos (0-255)
+        let isValidIp = ipPattern.test(cleanHost);
+        if (isValidIp) {
+            const parts = cleanHost.split(':')[0].split('.');
+            if (parts.some(part => parseInt(part, 10) > 255)) {
+                isValidIp = false;
+            }
+        }
+
+        if (!isValidIp && !domainPattern.test(cleanHost)) {
             console.error(`[mongodb] Host inválido na URI: ${cleanHost}`);
             return false;
         }
@@ -76,14 +90,12 @@ async function connectToDatabase() {
             // Timeout de socket para evitar conexões órfãs
             socketTimeoutMS: 45000,
             // Máximo de tentativas de reconexão
-            maxPoolSize: 10,
-            // Validação adicional de SSL/TLS se necessário
-            sslValidate: true
+            maxPoolSize: 10
         };
 
         await mongoose.connect(uri, options);
         console.log('[mongodb] Conexão com o MongoDB estabelecida com sucesso.');
-        
+
         // Configuração de eventos de conexão para monitoramento
         mongoose.connection.on('error', (err) => {
             console.error('[mongodb] Erro de conexão:', err.message);
